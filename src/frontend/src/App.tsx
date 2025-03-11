@@ -1,94 +1,209 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { LoginForm } from './components/auth/LoginForm';
-import { RegisterForm } from './components/auth/RegisterForm';
-import { DatasetList } from './components/dataset/DatasetList';
-import { CreateDatasetForm } from './components/dataset/CreateDatasetForm';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { Home } from './pages/Home';
+import { Features } from './pages/Features';
+import { Pricing } from './pages/Pricing';
+import { About } from './pages/About';
+import { Contact } from './pages/Contact';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
+import { GenerationProgress } from './pages/GenerationProgress';
+import { Dashboard } from './pages/Dashboard';
 import { useAuth } from './hooks/useAuth';
 
-const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// Protected Route component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
 };
 
-const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-  return !isAuthenticated ? <>{children}</> : <Navigate to="/dashboard" />;
+const PublicNavbar = () => (
+  <nav className="bg-gray-800 border-b border-gray-700">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex justify-between h-16">
+        <div className="flex items-center">
+          <Link to="/" className="text-2xl font-bold text-primary-400">
+            AI Dataset Generator
+          </Link>
+        </div>
+        <div className="flex items-center space-x-8">
+          <Link to="/features" className="text-gray-300 hover:text-primary-400 transition-colors">
+            Features
+          </Link>
+          <Link to="/pricing" className="text-gray-300 hover:text-primary-400 transition-colors">
+            Pricing
+          </Link>
+          <Link to="/about" className="text-gray-300 hover:text-primary-400 transition-colors">
+            About
+          </Link>
+          <Link to="/contact" className="text-gray-300 hover:text-primary-400 transition-colors">
+            Contact
+          </Link>
+          <div className="flex items-center space-x-4">
+            <Link
+              to="/login"
+              className="text-gray-300 hover:text-primary-400 transition-colors"
+            >
+              Sign In
+            </Link>
+            <Link
+              to="/register"
+              className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+            >
+              Sign Up
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+);
+
+const AuthenticatedNavbar = () => {
+  const { logout, user } = useAuth();
+  
+  return (
+    <nav className="bg-gray-800 border-b border-gray-700">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/dashboard" className="text-2xl font-bold text-primary-400">
+              AI Dataset Generator
+            </Link>
+          </div>
+          <div className="flex items-center space-x-8">
+            <Link to="/dashboard" className="text-gray-300 hover:text-primary-400 transition-colors">
+              Dashboard
+            </Link>
+            <div className="flex items-center space-x-4">
+              <span className="text-gray-300">Welcome, {user?.name}</span>
+              <button
+                onClick={logout}
+                className="text-gray-300 hover:text-primary-400 transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
 };
+
+const PublicLayout = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen bg-gray-900">
+    <PublicNavbar />
+    {children}
+  </div>
+);
+
+const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen bg-gray-900">
+    <AuthenticatedNavbar />
+    {children}
+  </div>
+);
 
 export const App: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
-        <Routes>
-          {/* Public Routes */}
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <div className="min-h-screen flex items-center justify-center">
-                  <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-                    <h2 className="text-center text-3xl font-extrabold text-gray-900">
-                      Sign in to your account
-                    </h2>
-                    <LoginForm />
-                  </div>
-                </div>
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <div className="min-h-screen flex items-center justify-center">
-                  <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-                    <h2 className="text-center text-3xl font-extrabold text-gray-900">
-                      Create your account
-                    </h2>
-                    <RegisterForm />
-                  </div>
-                </div>
-              </PublicRoute>
-            }
-          />
+      <Routes>
+        {/* Public routes */}
+        <Route
+          path="/"
+          element={
+            <PublicLayout>
+              <Home />
+            </PublicLayout>
+          }
+        />
+        <Route
+          path="/features"
+          element={
+            <PublicLayout>
+              <Features />
+            </PublicLayout>
+          }
+        />
+        <Route
+          path="/pricing"
+          element={
+            <PublicLayout>
+              <Pricing />
+            </PublicLayout>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <PublicLayout>
+              <About />
+            </PublicLayout>
+          }
+        />
+        <Route
+          path="/contact"
+          element={
+            <PublicLayout>
+              <Contact />
+            </PublicLayout>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PublicLayout>
+              <Login />
+            </PublicLayout>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicLayout>
+              <Register />
+            </PublicLayout>
+          }
+        />
 
-          {/* Private Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                  <div className="px-4 py-6 sm:px-0">
-                    <h1 className="text-2xl font-semibold text-gray-900">My Datasets</h1>
-                    <div className="mt-8">
-                      <DatasetList />
-                    </div>
-                  </div>
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/datasets/create"
-            element={
-              <PrivateRoute>
-                <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                  <div className="px-4 py-6 sm:px-0">
-                    <h1 className="text-2xl font-semibold text-gray-900">Create Dataset</h1>
-                    <div className="mt-8">
-                      <CreateDatasetForm />
-                    </div>
-                  </div>
-                </div>
-              </PrivateRoute>
-            }
-          />
+        {/* Protected routes */}
+        <Route
+          path="/dashboard/*"
+          element={
+            <ProtectedRoute>
+              <AuthenticatedLayout>
+                <Dashboard />
+              </AuthenticatedLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/progress"
+          element={
+            <ProtectedRoute>
+              <AuthenticatedLayout>
+                <GenerationProgress />
+              </AuthenticatedLayout>
+            </ProtectedRoute>
+          }
+        />
 
-          {/* Default Route */}
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-        </Routes>
-      </div>
+        {/* Fallback route */}
+        <Route
+          path="*"
+          element={
+            <Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />
+          }
+        />
+      </Routes>
     </Router>
   );
 }; 

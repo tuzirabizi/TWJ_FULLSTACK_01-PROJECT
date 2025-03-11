@@ -15,7 +15,7 @@ import { User, Dataset, GenerationJob } from './models';
       port: parseInt(process.env.DB_PORT || '5432'),
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'postgres',
-      database: process.env.DB_NAME || 'ai_dataset_generator',
+      database: process.env.DB_NAME || 'aidatasetgenerator',
       entities: [User, Dataset, GenerationJob],
       synchronize: process.env.NODE_ENV === 'development',
       ssl: false,

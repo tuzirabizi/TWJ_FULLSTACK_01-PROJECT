@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Grid -->
+  <pattern id="grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E2E8F0" stroke-width="1"/>
+  </pattern>
+  <rect width="800" height="600" fill="url(#grid)" opacity="0.2"/>
+
+  <!-- Main Circle -->
+  <circle cx="400" cy="300" r="180" fill="#EBF4FF" stroke="#3B82F6" stroke-width="4"/>
+
+  <!-- Data Points -->
+  <g id="data-points">
+    <circle cx="320" cy="250" r="8" fill="#3B82F6"/>
+    <circle cx="480" cy="320" r="8" fill="#3B82F6"/>
+    <circle cx="380" cy="400" r="8" fill="#3B82F6"/>
+    <circle cx="450" cy="220" r="8" fill="#3B82F6"/>
+    <circle cx="350" cy="350" r="8" fill="#3B82F6"/>
+  </g>
+
+  <!-- Connecting Lines -->
+  <g id="connections" stroke="#3B82F6" stroke-width="2">
+    <line x1="320" y1="250" x2="480" y2="320"/>
+    <line x1="480" y1="320" x2="380" y2="400"/>
+    <line x1="380" y1="400" x2="350" y2="350"/>
+    <line x1="350" y1="350" x2="450" y2="220"/>
+    <line x1="450" y1="220" x2="320" y2="250"/>
+  </g>
+
+  <!-- Small Decorative Elements -->
+  <g id="decorative-elements">
+    <circle cx="200" cy="150" r="30" fill="#DBEAFE"/>
+    <circle cx="600" cy="400" r="40" fill="#DBEAFE"/>
+    <circle cx="150" cy="450" r="25" fill="#DBEAFE"/>
+    <circle cx="650" cy="200" r="35" fill="#DBEAFE"/>
+  </g>
+
+  <!-- AI Text -->
+  <text x="370" y="310" font-family="Arial" font-size="48" font-weight="bold" fill="#2563EB">AI</text>
+
+  <!-- Binary Numbers -->
+  <g font-family="monospace" font-size="14" fill="#64748B">
+    <text x="100" y="100">01001</text>
+    <text x="650" y="150">10110</text>
+    <text x="200" y="500">11001</text>
+    <text x="600" y="450">01101</text>
+  </g>
+</svg> 

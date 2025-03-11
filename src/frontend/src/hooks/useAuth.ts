@@ -1,11 +1,27 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LoginRequest, RegisterRequest, AuthResponse, User } from '@ai-dataset-generator/shared';
-import { api } from '../services/api';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
+interface AuthResponse {
+  user: User;
+  accessToken: string;
+  refreshToken: string;
+}
+
+interface LoginRequest {
+  email: string;
+  password: string;
+}
 
 interface AuthState {
   user: User | null;
   accessToken: string | null;
+  isAuthenticated: boolean;
 }
 
 export const useAuth = () => {
@@ -16,8 +32,17 @@ export const useAuth = () => {
     return {
       user: storedUser ? JSON.parse(storedUser) : null,
       accessToken: storedToken,
+      isAuthenticated: !!storedToken && !!storedUser
     };
   });
+
+  useEffect(() => {
+    // Check if token exists on mount
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      setAuthState(prev => ({ ...prev, isAuthenticated: false }));
+    }
+  }, []);
 
   const setAuth = useCallback((data: AuthResponse) => {
     localStorage.setItem('user', JSON.stringify(data.user));
@@ -26,6 +51,7 @@ export const useAuth = () => {
     setAuthState({
       user: data.user,
       accessToken: data.accessToken,
+      isAuthenticated: true
     });
   }, []);
 
@@ -36,57 +62,43 @@ export const useAuth = () => {
     setAuthState({
       user: null,
       accessToken: null,
+      isAuthenticated: false
     });
   }, []);
 
-  const login = useCallback(async (data: LoginRequest) => {
-    const response = await api.post<AuthResponse>('/auth/login', data);
-    setAuth(response.data);
-    navigate('/dashboard');
-  }, [navigate, setAuth]);
-
-  const register = useCallback(async (data: RegisterRequest) => {
-    const response = await api.post<AuthResponse>('/auth/register', data);
-    setAuth(response.data);
-    navigate('/dashboard');
-  }, [navigate, setAuth]);
+  const login = useCallback(async (credentials: LoginRequest) => {
+    try {
+      // For demo purposes, we'll use hardcoded credentials
+      if (credentials.email === 'admin@aidataset.com' && credentials.password === 'Admin123!') {
+        const mockResponse: AuthResponse = {
+          user: {
+            id: '1',
+            email: credentials.email,
+            name: 'Admin User'
+          },
+          accessToken: 'mock-token-' + Date.now(),
+          refreshToken: 'mock-refresh-token-' + Date.now()
+        };
+        setAuth(mockResponse);
+        return mockResponse;
+      }
+      throw new Error('Invalid credentials. Try admin@aidataset.com / Admin123!');
+    } catch (error) {
+      clearAuth();
+      throw error;
+    }
+  }, [setAuth, clearAuth]);
 
   const logout = useCallback(() => {
     clearAuth();
     navigate('/login');
   }, [clearAuth, navigate]);
 
-  const refreshToken = useCallback(async () => {
-    const storedRefreshToken = localStorage.getItem('refreshToken');
-    if (!storedRefreshToken) {
-      throw new Error('No refresh token available');
-    }
-
-    try {
-      const response = await api.post<{ accessToken: string }>('/auth/refresh-token', {
-        refreshToken: storedRefreshToken,
-      });
-
-      localStorage.setItem('accessToken', response.data.accessToken);
-      setAuthState((prev) => ({
-        ...prev,
-        accessToken: response.data.accessToken,
-      }));
-
-      return response.data.accessToken;
-    } catch (error) {
-      clearAuth();
-      throw error;
-    }
-  }, [clearAuth]);
-
   return {
     user: authState.user,
     accessToken: authState.accessToken,
-    isAuthenticated: !!authState.user,
+    isAuthenticated: authState.isAuthenticated,
     login,
-    register,
-    logout,
-    refreshToken,
+    logout
   };
 }; 

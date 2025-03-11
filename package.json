@@ -14,7 +14,10 @@
     "build": "npm run build:backend && npm run build:frontend",
     "build:backend": "cd src/backend && npm run build",
     "build:frontend": "cd src/frontend && npm run build",
-    "start": "cd src/backend && npm run start:prod"
+    "start": "cd src/backend && npm run start:prod",
+    "start:dev": "concurrently \"cd src/backend && npm run start:dev\" \"cd src/frontend && npm run dev\"",
+    "start": "concurrently \"cd src/backend && npm run start\" \"cd src/frontend && npm run preview\"",
+    "install:all": "npm install && cd src/backend && npm install && cd ../frontend && npm install"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
